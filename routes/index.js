@@ -17,19 +17,22 @@ module.exports = (app, passport) => {
 		res.redirect('/signin')
 	}
 
-	// Home page
+	/* Home page */
 	app.get('/', authenticated, (req, res) => res.redirect('/restaurants'))
 	app.get('/restaurants', authenticated, restController.getRestaurants)
 
-	// Admin
+	/* Admin */
 	app.get('/admin', authenticatedAdmin, (req, res) => res.redirect('/admin/restaurants'))
 	app.get('/admin/restaurants', authenticatedAdmin, adminController.getRestaurants)
+	// create
+	app.get('/admin/restaurants/create', authenticatedAdmin, adminController.createRestaurant)
+	app.post('/admin/restaurants', authenticatedAdmin, adminController.postRestaurant)
 
-	// Signup
+	/* Signup */
 	app.get('/signup', userController.signUpPage)
 	app.post('/signup', userController.signUp)
 
-	// Signin
+	/* Signin */
 	app.get('/signin', userController.signInPage)
 	app.post(
 		'/signin',
@@ -37,6 +40,6 @@ module.exports = (app, passport) => {
 		userController.signIn
 	)
 
-	// Logout
+	/* Logout */
 	app.get('/logout', userController.logout)
 }
