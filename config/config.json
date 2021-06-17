@@ -1,27 +1,34 @@
 {
-  "development": {
-    "username": "root",
-    "password": "password",
-    "database": "forum",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
-  },
-  "test": {
-    "username": "root",
-    "password": "password",
-    "database": "forum_test",
-    "host": "127.0.0.1",
-    "dialect": "mysql",
-    "logging": false
-  },
-  "production": {
-    "use_env_variable": "CLEARDB_SILVER_URL"
-  },
-  "travis": {
-    "username": "travis",
-    "database": "forum_test",
-    "host": "127.0.0.1",
-    "dialect": "mysql",
-    "logging": false
-  }
+	"development": {
+		"username": "root",
+		"password": "password",
+		"database": "forum",
+		"host": "127.0.0.1",
+		"dialect": "mysql"
+	},
+	"test": {
+		"username": "root",
+		"password": "password",
+		"database": "forum_test",
+		"host": "127.0.0.1",
+		"dialect": "mysql",
+		"logging": false
+	},
+	"production": {
+		"use_env_variable": "DATABASE_URL",
+		"dialect": "postgres",
+		"protocol": "postgtres",
+		"dialectOptions": {
+			"ssl": {
+				"rejectUnauthorized": false
+			}
+		}
+	},
+	"travis": {
+		"username": "travis",
+		"database": "forum_test",
+		"host": "127.0.0.1",
+		"dialect": "mysql",
+		"logging": false
+	}
 }
