@@ -1,6 +1,7 @@
 const imgur = require('imgur-node-api')
 const db = require('../models')
 const { Restaurant } = db
+const { User } = db
 imgur.setClientID(process.env.IMGUR_CLIENT_ID)
 
 const adminController = {
@@ -110,6 +111,23 @@ const adminController = {
 		Restaurant.findByPk(req.params.id)
 			.then(restaurant => restaurant.destroy())
 			.then(() => res.redirect('/admin/restaurants'))
+	},
+
+	getUsers: (req, res) => {
+		User.findAll({ raw: true }).then(users => {
+			res.render('admin/users', { users })
+		})
+	},
+
+	toggleAdmin: (req, res) => {
+		User.findByPk(req.params.id)
+			.then(user => {
+				user.update({ isAdmin: !user.isAdmin })
+			})
+			.then(() => {
+				req.flash('success_msg', 'user was successfully to update')
+				res.redirect('/admin/users')
+			})
 	}
 }
 

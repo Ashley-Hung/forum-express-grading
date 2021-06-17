@@ -1,0 +1,44 @@
+<h1>餐廳後台</h1>
+
+<div class="d-flex justify-content-between align-items-center">
+  <div class="d-flex h5">
+    <a href="/admin/restaurants">Restaurants</a>
+    <div class="mx-2">|</div>
+    <a href="/admin/users" class="text-muted" style="text-decoration: none;">Users</a>
+  </div>
+
+  <a href='/admin/restaurants/create'>
+    <button type="button" class="btn btn-primary">New Restaurant</button>
+  </a>
+</div>
+
+<br />
+
+<table class="table text-center">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Name</th>
+      <th scope="col">Email</th>
+      <th scope="col">Role</th>
+      <th scope="col">#</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each users}}
+      <tr>
+        <th scope="row">{{this.id}}</th>
+        <td>{{this.name}}</td>
+        <td>{{this.email}}</td>
+        <td>{{#if this.isAdmin}}admin{{else}}user{{/if}}</td>
+        <td>
+          <form action="/admin/users/{{this.id}}/toggleAdmin?_method=PUT" method="POST">
+            <button type="submit" class="btn btn-link p-0">
+              {{#if this.isAdmin}}set as user{{else}}set as admin{{/if}}
+            </button>
+          </form>
+        </td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>

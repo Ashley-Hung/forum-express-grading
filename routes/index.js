@@ -24,7 +24,7 @@ module.exports = (app, passport) => {
 	app.get('/', authenticated, (req, res) => res.redirect('/restaurants'))
 	app.get('/restaurants', authenticated, restController.getRestaurants)
 
-	/* Admin */
+	/* admin/restaurants */
 	app.get('/admin', authenticatedAdmin, (req, res) => res.redirect('/admin/restaurants'))
 	app.get('/admin/restaurants', authenticatedAdmin, adminController.getRestaurants)
 	// create
@@ -37,6 +37,10 @@ module.exports = (app, passport) => {
 	app.put('/admin/restaurants/:id', authenticatedAdmin, upload.single('image'), adminController.putRestaurant)
 	// delete
 	app.delete('/admin/restaurants/:id', authenticatedAdmin, adminController.deleteRestaurant)
+
+	/* admin/users */
+	app.get('/admin/users', authenticatedAdmin, adminController.getUsers)
+	app.put('/admin/users/:id/toggleAdmin', authenticatedAdmin, adminController.toggleAdmin)
 
 	/* Signup */
 	app.get('/signup', userController.signUpPage)
