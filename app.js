@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const session = require('express-session')
 const flash = require('connect-flash')
 const methodOverride = require('method-override')
+const helpers = require('./_helpers')
 const passport = require('./config/passport')
 if (process.env.NODE_ENV !== 'production') {
 	require('dotenv').config()
@@ -22,7 +23,7 @@ app.use(passport.session())
 app.use(methodOverride('_method'))
 app.use('/upload', express.static(__dirname + '/upload'))
 app.use((req, res, next) => {
-	res.locals.user = req.user
+	res.locals.user = helpers.getUser(req)
 	res.locals.success_msg = req.flash('success_msg')
 	res.locals.warning_msg = req.flash('warning_msg')
 	next()
