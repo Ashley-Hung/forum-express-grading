@@ -31,7 +31,7 @@ const adminController = {
 					description: req.body.description,
 					image: file ? img.data.link : null
 				}).then(restaurant => {
-					req.flash('success_messages', 'restaurant was successfully created')
+					req.flash('success_msg', 'restaurant was successfully created')
 					return res.redirect('/admin/restaurants')
 				})
 			})
@@ -82,7 +82,7 @@ const adminController = {
 							image: file ? img.data.link : restaurant.image
 						})
 						.then(restaurant => {
-							req.flash('success_messages', 'restaurant was successfully to update')
+							req.flash('success_msg', 'restaurant was successfully to update')
 							res.redirect('/admin/restaurants')
 						})
 				})
