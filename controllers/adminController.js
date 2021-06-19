@@ -1,7 +1,12 @@
+const Ajv = require('ajv').default
+const addFormats = require('ajv-formats')
+const ajv = new Ajv({ allErrors: true })
+addFormats(ajv)
+require('ajv-errors')(ajv)
+const { schema } = require('../controllers/schema')
+const validate = ajv.compile(schema)
 const imgur = require('imgur-node-api')
-const db = require('../models')
-const { Restaurant } = db
-const { User } = db
+const { Restaurant, User } = require('../models')
 imgur.setClientID(process.env.IMGUR_CLIENT_ID)
 
 const adminController = {
@@ -16,33 +21,43 @@ const adminController = {
 	},
 
 	postRestaurant: (req, res) => {
-		if (!req.body.name) {
-			req.flash('warning_msg', "name didn't exist")
-			return res.redirect('back')
+		const { name, tel, address, opening_hours, description } = req.body
+		const restaurant = req.body
+		let error_msg = []
+
+		if (!name || !tel || !address || !opening_hours) {
+			error_msg = [{ message: '* 為必填欄位' }]
+			return res.render('admin/create', { restaurant, error_msg })
+		}
+
+		validate({ name, tel, address, opening_hours: `${opening_hours}:00Z`, description })
+		error_msg = validate.errors
+		if (error_msg) {
+			return res.render('admin/create', { restaurant, error_msg })
 		}
 
 		const { file } = req
 		if (file) {
 			imgur.upload(file.path, (err, img) => {
 				return Restaurant.create({
-					name: req.body.name,
-					tel: req.body.tel,
-					address: req.body.address,
-					opening_hours: req.body.opening_hours,
-					description: req.body.description,
+					name,
+					tel,
+					address,
+					opening_hours,
+					description,
 					image: file ? img.data.link : null
-				}).then(restaurant => {
+				}).then(() => {
 					req.flash('success_msg', 'restaurant was successfully created')
 					return res.redirect('/admin/restaurants')
 				})
 			})
 		} else {
 			return Restaurant.create({
-				name: req.body.name,
-				tel: req.body.tel,
-				address: req.body.address,
-				opening_hours: req.body.opening_hours,
-				description: req.body.description,
+				name,
+				tel,
+				address,
+				opening_hours,
+				description,
 				image: null
 			}).then(() => {
 				req.flash('success_msg', 'restaurant was successfully created')
@@ -64,8 +79,18 @@ const adminController = {
 	},
 
 	putRestaurant: (req, res) => {
-		if (!req.body.name) {
-			req.flash('warning_msg', "name didn't exist")
+		const { name, tel, address, opening_hours, description } = req.body
+
+		if (!name || !tel || !address || !opening_hours) {
+			req.flash('warning_msg', '* 為必填欄位')
+			return res.redirect('back')
+		}
+
+		validate({ name, tel, address, opening_hours: `${opening_hours}:00Z`, description })
+		if (validate.errors) {
+			for (const error of validate.errors) {
+				req.flash('error_msg', error)
+			}
 			return res.redirect('back')
 		}
 
@@ -75,14 +100,14 @@ const adminController = {
 				return Restaurant.findByPk(req.params.id).then(restaurant => {
 					restaurant
 						.update({
-							name: req.body.name,
-							tel: req.body.tel,
-							address: req.body.address,
-							opening_hours: req.body.opening_hours,
-							description: req.body.description,
+							name,
+							tel,
+							address,
+							opening_hours,
+							description,
 							image: file ? img.data.link : restaurant.image
 						})
-						.then(restaurant => {
+						.then(() => {
 							req.flash('success_msg', 'restaurant was successfully to update')
 							res.redirect('/admin/restaurants')
 						})
@@ -92,11 +117,11 @@ const adminController = {
 			return Restaurant.findByPk(req.params.id).then(restaurant => {
 				restaurant
 					.update({
-						name: req.body.name,
-						tel: req.body.tel,
-						address: req.body.address,
-						opening_hours: req.body.opening_hours,
-						description: req.body.description,
+						name,
+						tel,
+						address,
+						opening_hours,
+						description,
 						image: null
 					})
 					.then(() => {
