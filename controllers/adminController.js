@@ -11,9 +11,14 @@ imgur.setClientID(process.env.IMGUR_CLIENT_ID)
 
 const adminController = {
 	getRestaurants: (req, res) => {
-		return Restaurant.findAll({ raw: true }).then(restaurants => {
-			return res.render('admin/restaurants', { restaurants })
-		})
+		return Restaurant.findAll({ raw: true })
+			.then(restaurants => {
+				return res.render('admin/restaurants', { restaurants })
+			})
+			.catch(error => {
+				res.render('error')
+				console.error(error)
+			})
 	},
 
 	createRestaurant: (req, res) => {
@@ -46,10 +51,15 @@ const adminController = {
 					opening_hours,
 					description,
 					image: file ? img.data.link : null
-				}).then(() => {
-					req.flash('success_msg', 'restaurant was successfully created')
-					return res.redirect('/admin/restaurants')
 				})
+					.then(() => {
+						req.flash('success_msg', 'restaurant was successfully created')
+						return res.redirect('/admin/restaurants')
+					})
+					.catch(error => {
+						res.render('error')
+						console.error(error)
+					})
 			})
 		} else {
 			return Restaurant.create({
@@ -59,23 +69,36 @@ const adminController = {
 				opening_hours,
 				description,
 				image: null
-			}).then(() => {
-				req.flash('success_msg', 'restaurant was successfully created')
-				res.redirect('/admin/restaurants')
 			})
+				.then(() => {
+					req.flash('success_msg', 'restaurant was successfully created')
+					res.redirect('/admin/restaurants')
+				})
+				.catch(error => {
+					res.render('error')
+					console.error(error)
+				})
 		}
 	},
 
 	getRestaurant: (req, res) => {
-		return Restaurant.findByPk(req.params.id, { raw: true }).then(restaurant =>
-			res.render('admin/restaurant', { restaurant })
-		)
+		return Restaurant.findByPk(req.params.id, { raw: true })
+			.then(restaurant => res.render('admin/restaurant', { restaurant }))
+			.catch(error => {
+				res.render('error')
+				console.error(error)
+			})
 	},
 
 	editRestaurant: (req, res) => {
-		return Restaurant.findByPk(req.params.id, { raw: true }).then(restaurant => {
-			return res.render('admin/create', { restaurant })
-		})
+		return Restaurant.findByPk(req.params.id, { raw: true })
+			.then(restaurant => {
+				return res.render('admin/create', { restaurant })
+			})
+			.catch(error => {
+				res.render('error')
+				console.error(error)
+			})
 	},
 
 	putRestaurant: (req, res) => {
@@ -111,6 +134,10 @@ const adminController = {
 							req.flash('success_msg', 'restaurant was successfully to update')
 							res.redirect('/admin/restaurants')
 						})
+						.catch(error => {
+							res.render('error')
+							console.error(error)
+						})
 				})
 			})
 		} else {
@@ -128,6 +155,10 @@ const adminController = {
 						req.flash('success_msg', 'restaurant was successfully to update')
 						res.redirect('/admin/restaurants')
 					})
+					.catch(error => {
+						res.render('error')
+						console.error(error)
+					})
 			})
 		}
 	},
@@ -136,12 +167,21 @@ const adminController = {
 		Restaurant.findByPk(req.params.id)
 			.then(restaurant => restaurant.destroy())
 			.then(() => res.redirect('/admin/restaurants'))
+			.catch(error => {
+				res.render('error')
+				console.error(error)
+			})
 	},
 
 	getUsers: (req, res) => {
-		User.findAll({ raw: true }).then(users => {
-			res.render('admin/users', { users })
-		})
+		User.findAll({ raw: true })
+			.then(users => {
+				res.render('admin/users', { users })
+			})
+			.catch(error => {
+				res.render('error')
+				console.error(error)
+			})
 	},
 
 	toggleAdmin: (req, res) => {
@@ -152,6 +192,10 @@ const adminController = {
 			.then(() => {
 				req.flash('success_msg', 'user was successfully to update')
 				res.redirect('/admin/users')
+			})
+			.catch(error => {
+				res.render('error')
+				console.error(error)
 			})
 	}
 }
