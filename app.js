@@ -7,7 +7,7 @@ const methodOverride = require('method-override')
 const helpers = require('./_helpers')
 const passport = require('./config/passport')
 if (process.env.NODE_ENV !== 'production') {
-	require('dotenv').config()
+  require('dotenv').config()
 }
 
 const app = express()
@@ -24,15 +24,15 @@ app.use(methodOverride('_method'))
 app.use('/upload', express.static(__dirname + '/upload'))
 app.use(express.static('public'))
 app.use((req, res, next) => {
-	res.locals.user = helpers.getUser(req)
-	res.locals.success_msg = req.flash('success_msg')
-	res.locals.warning_msg = req.flash('warning_msg')
-	res.locals.error_msg = req.flash('error_msg')
-	next()
+  res.locals.user = helpers.getUser(req)
+  res.locals.success_msg = req.flash('success_msg')
+  res.locals.warning_msg = req.flash('warning_msg')
+  res.locals.error_msg = req.flash('error_msg')
+  next()
 })
 
 app.listen(port, () => {
-	console.log(`Example app listening at http://localhost:${port}`)
+  console.log(`Example app listening at http://localhost:${port}`)
 })
 
 require('./routes')(app, passport) // 載入的是一個函式，app 是要傳入函式的參數
