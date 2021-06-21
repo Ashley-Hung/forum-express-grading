@@ -37,4 +37,9 @@ app.listen(port, () => {
 
 require('./routes')(app, passport) // 載入的是一個函式，app 是要傳入函式的參數
 
+app.use((err, req, res, next) => {
+  console.error(err)
+  res.render('error')
+})
+
 module.exports = app

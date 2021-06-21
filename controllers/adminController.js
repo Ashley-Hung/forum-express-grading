@@ -10,14 +10,13 @@ const { Restaurant, User } = require('../models')
 imgur.setClientID(process.env.IMGUR_CLIENT_ID)
 
 const adminController = {
-  getRestaurants: (req, res) => {
+  getRestaurants: (req, res, next) => {
     return Restaurant.findAll({ raw: true })
       .then(restaurants => {
         return res.render('admin/restaurants', { restaurants })
       })
       .catch(error => {
-        res.render('error')
-        console.error(error)
+        next(error)
       })
   },
 
@@ -25,7 +24,7 @@ const adminController = {
     res.render('admin/create')
   },
 
-  postRestaurant: (req, res) => {
+  postRestaurant: (req, res, next) => {
     const { name, tel, address, opening_hours, description } = req.body
     const restaurant = req.body
     let error_msg = []
@@ -57,8 +56,7 @@ const adminController = {
             return res.redirect('/admin/restaurants')
           })
           .catch(error => {
-            res.render('error')
-            console.error(error)
+            next(error)
           })
       })
     } else {
@@ -75,33 +73,34 @@ const adminController = {
           res.redirect('/admin/restaurants')
         })
         .catch(error => {
-          res.render('error')
-          console.error(error)
+          next(error)
         })
     }
   },
 
-  getRestaurant: (req, res) => {
+  getRestaurant: (req, res, next) => {
     return Restaurant.findByPk(req.params.id, { raw: true })
-      .then(restaurant => res.render('admin/restaurant', { restaurant }))
+      .then(restaurant => {
+        if (!restaurant) throw new Error('restaurant not found.')
+        res.render('admin/restaurant', { restaurant })
+      })
       .catch(error => {
-        res.render('error')
-        console.error(error)
+        next(error)
       })
   },
 
-  editRestaurant: (req, res) => {
+  editRestaurant: (req, res, next) => {
     return Restaurant.findByPk(req.params.id, { raw: true })
       .then(restaurant => {
+        if (!restaurant) throw new Error('restaurant not found.')
         return res.render('admin/create', { restaurant })
       })
       .catch(error => {
-        res.render('error')
-        console.error(error)
+        next(error)
       })
   },
 
-  putRestaurant: (req, res) => {
+  putRestaurant: (req, res, next) => {
     const { name, tel, address, opening_hours, description } = req.body
 
     if (!name || !tel || !address || !opening_hours) {
@@ -121,6 +120,8 @@ const adminController = {
     if (file) {
       imgur.upload(file.path, (err, img) => {
         return Restaurant.findByPk(req.params.id).then(restaurant => {
+          if (!restaurant) throw new Error('restaurant not found.')
+
           restaurant
             .update({
               name,
@@ -135,13 +136,14 @@ const adminController = {
               res.redirect('/admin/restaurants')
             })
             .catch(error => {
-              res.render('error')
-              console.error(error)
+              next(error)
             })
         })
       })
     } else {
       return Restaurant.findByPk(req.params.id).then(restaurant => {
+        if (!restaurant) throw new Error('restaurant not found.')
+
         restaurant
           .update({
             name,
@@ -156,37 +158,38 @@ const adminController = {
             res.redirect('/admin/restaurants')
           })
           .catch(error => {
-            res.render('error')
-            console.error(error)
+            next(error)
           })
       })
     }
   },
 
-  deleteRestaurant: (req, res) => {
+  deleteRestaurant: (req, res, next) => {
     Restaurant.findByPk(req.params.id)
-      .then(restaurant => restaurant.destroy())
+      .then(restaurant => {
+        if (!restaurant) throw new Error('restaurant not found.')
+        restaurant.destroy()
+      })
       .then(() => res.redirect('/admin/restaurants'))
       .catch(error => {
-        res.render('error')
-        console.error(error)
+        next(error)
       })
   },
 
-  getUsers: (req, res) => {
+  getUsers: (req, res, next) => {
     User.findAll({ raw: true })
       .then(users => {
         res.render('admin/users', { users })
       })
       .catch(error => {
-        res.render('error')
-        console.error(error)
+        next(error)
       })
   },
 
-  toggleAdmin: (req, res) => {
+  toggleAdmin: (req, res, next) => {
     User.findByPk(req.params.id)
       .then(user => {
+        if (!user) throw new Error('User not found.')
         user.update({ isAdmin: !user.isAdmin })
       })
       .then(() => {
@@ -194,8 +197,7 @@ const adminController = {
         res.redirect('/admin/users')
       })
       .catch(error => {
-        res.render('error')
-        console.error(error)
+        next(error)
       })
   }
 }

@@ -19,7 +19,7 @@ module.exports = {
     errorMessage: {
       properties: {
         name: '名字長度需小於 10 個字',
-        tel: '請輸入含區碼的電話號碼(不包含任何符號和空格，共9或10碼',
+        tel: '請輸入含區碼的電話號碼(不包含任何符號和空格，共 9 或 10 碼',
         address: '地址長度需小於 30 個字',
         opening_hours: '請輸入正確的時間格式(24小時制)',
         description: '餐廳碼描述最多 50 個字'

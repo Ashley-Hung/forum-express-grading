@@ -6,7 +6,7 @@ const userController = {
     return res.render('signup')
   },
 
-  signUp: (req, res) => {
+  signUp: (req, res, next) => {
     const { name, email, password, passwordCheck } = req.body
     const errors = []
     if (!name || !email || !password || !passwordCheck) {
@@ -37,8 +37,7 @@ const userController = {
           return res.redirect('/signin')
         })
         .catch(err => {
-          res.end('An unexpected error has occurred')
-          console.log(err)
+          next(err)
         })
     })
   },
