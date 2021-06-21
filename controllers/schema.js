@@ -11,7 +11,7 @@ module.exports = {
           },
           address: { type: 'string', maxLength: 30 },
           opening_hours: { type: 'string', format: 'time' },
-          description: { type: 'string', maxLength: 50, minLength: 0 }
+          description: { type: 'string', maxLength: 280, minLength: 0 }
         },
         additionalProperties: false
       }
@@ -22,7 +22,7 @@ module.exports = {
         tel: '請輸入含區碼的電話號碼(不包含任何符號和空格，共 9 或 10 碼',
         address: '地址長度需小於 30 個字',
         opening_hours: '請輸入正確的時間格式(24小時制)',
-        description: '餐廳碼描述最多 50 個字'
+        description: '餐廳碼描述最多 280 個字'
       }
     }
   }
