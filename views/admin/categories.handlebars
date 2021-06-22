@@ -1,0 +1,47 @@
+<h1>餐廳後台</h1>
+<div class="d-flex h5">
+  <a href="/admin/restaurants">Restaurants</a>
+  <div class="mx-2">|</div>
+  <a href="/admin/users">Users</a>
+  <div class="mx-2">|</div>
+  <a href="/admin/categories" class="text-muted" style="text-decoration: none;">Categories</a>
+</div>
+<br />
+<br />
+<div class="d-flex align-items-center p-3 my-3 text-white-50 bg-purple rounded shadow-sm">
+  <form action="/admin/categories" method="POST" class="d-flex">
+    <input type="text" class="form-control mr-2" placeholder="name" name="name">
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+<br />
+<br />
+<table class="table text-center">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Category Name</th>
+      <th scope="col">#</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each categories}}
+      <tr>
+        <th scope="row">{{this.id}}</th>
+        <td>{{this.name}}</td>
+        <td>
+          <button type="button" class="btn btn-link">
+            <a href="/admin/categories/{{this.id}}">
+              Edit
+            </a>
+          </button>
+          <form action="/admin/categories/{{this.id}}?_method=DELETE" method="POST" style="display: inline;">
+            <button type="submit" class="btn btn-link">Delete</button>
+          </form>
+        </td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
+<br />
+<br />
