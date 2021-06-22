@@ -8,10 +8,18 @@
 </div>
 <br />
 <div class="d-flex align-items-center p-3 my-3 text-white-50 bg-purple rounded shadow-sm">
-  <form action="/admin/categories" method="POST" class="d-flex">
-    <input type="text" class="form-control mr-2" placeholder="name" name="name">
-    <button type="submit" class="btn btn-primary">Submit</button>
-  </form>
+  {{#if category}}
+    <form action="/admin/categories/{{category.id}}?_method=PUT" method="POST" class="d-flex">
+      <input type="text" class="form-control mr-2" placeholder="name" name="name" value="{{category.name}}">
+      <button type="submit" class="btn btn-primary mr-2">Update</button>
+      <a href="/admin/categories" class="btn">or Create New ?</a>
+    </form>
+  {{else}}
+    <form action="/admin/categories" method="POST" class="d-flex">
+      <input type="text" class="form-control mr-2" placeholder="name" name="name">
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  {{/if}}
 </div>
 
 <br />
