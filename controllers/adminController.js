@@ -6,13 +6,14 @@ require('ajv-errors')(ajv)
 const { schema } = require('../controllers/schema')
 const validate = ajv.compile(schema)
 const imgur = require('imgur-node-api')
-const { Restaurant, User } = require('../models')
+const { Restaurant, User, Category } = require('../models')
 imgur.setClientID(process.env.IMGUR_CLIENT_ID)
 
 const adminController = {
   getRestaurants: (req, res, next) => {
-    return Restaurant.findAll({ raw: true })
+    return Restaurant.findAll({ raw: true, nest: true, include: Category })
       .then(restaurants => {
+        console.log(restaurants)
         return res.render('admin/restaurants', { restaurants })
       })
       .catch(error => {
