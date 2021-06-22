@@ -47,6 +47,18 @@ const categoryController = {
     } catch (error) {
       next(error)
     }
+  },
+
+  deleteCategory: async (req, res, next) => {
+    try {
+      const category = await Category.findByPk(req.params.id)
+      if (!category) throw new Error('category not found.')
+
+      await category.destroy()
+      res.redirect('/admin/categories')
+    } catch (error) {
+      next(error)
+    }
   }
 }
 
