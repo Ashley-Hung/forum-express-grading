@@ -13,7 +13,6 @@ const adminController = {
   getRestaurants: (req, res, next) => {
     return Restaurant.findAll({ raw: true, nest: true, include: Category })
       .then(restaurants => {
-        console.log(restaurants)
         return res.render('admin/restaurants', { restaurants })
       })
       .catch(error => {
@@ -80,10 +79,11 @@ const adminController = {
   },
 
   getRestaurant: (req, res, next) => {
-    return Restaurant.findByPk(req.params.id, { raw: true })
+    return Restaurant.findByPk(req.params.id, { include: Category })
       .then(restaurant => {
         if (!restaurant) throw new Error('restaurant not found.')
-        res.render('admin/restaurant', { restaurant })
+        res.render('admin/restaurant', { restaurant: restaurant.toJSON() })
+        console.log(restaurant)
       })
       .catch(error => {
         next(error)
