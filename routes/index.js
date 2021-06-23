@@ -60,6 +60,11 @@ module.exports = (app, passport) => {
   app.post('/comments', authenticated, commentController.postComment)
   app.delete('/comments/:id', authenticatedAdmin, commentController.deleteComment)
 
+  /* users */
+  app.get('/users/:id', authenticated, userController.getUser)
+  app.get('/users/:id/edit', authenticated, userController.editUser)
+  app.put('/users/:id', authenticated, upload.single('image'), userController.putUser)
+
   /* Signup */
   app.get('/signup', userController.signUpPage)
   app.post('/signup', userController.signUp)
