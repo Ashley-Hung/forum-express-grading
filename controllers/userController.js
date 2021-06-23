@@ -1,7 +1,8 @@
 const bcrypt = require('bcryptjs')
-const { User } = require('../models')
+const { User, Comment, Restaurant } = require('../models')
 const helpers = require('../_helpers')
 const imgur = require('imgur-node-api')
+const comment = require('../models/comment')
 imgur.setClientID(process.env.IMGUR_CLIENT_ID)
 
 const userController = {
@@ -62,10 +63,27 @@ const userController = {
 
   getUser: async (req, res, next) => {
     const isOwner = Number(req.params.id) === helpers.getUser(req).id ? true : false
-    const user = await User.findByPk(req.params.id)
-    if (!user) throw new Error('user not found.')
+    try {
+      const user = await User.findByPk(req.params.id, {
+        include: [{ model: Comment, include: Restaurant }]
+      })
+      if (!user) throw new Error('user not found.')
 
-    res.render('profile', { user: user.toJSON(), isOwner })
+      const restaurantInfo = new Map()
+      user.toJSON().Comments.forEach(r => {
+        const id = r.RestaurantId
+        if (restaurantInfo.has(id)) {
+          restaurantInfo.get(id).count++
+        } else {
+          restaurantInfo.set(id, { RestaurantId: id, name: r.Restaurant.name, image: r.Restaurant.image, count: 1 })
+        }
+      })
+      const restaurants = [...restaurantInfo.values()]
+
+      res.render('profile', { user: user.toJSON(), isOwner, restaurants })
+    } catch (error) {
+      next(error)
+    }
   },
 
   editUser: async (req, res, next) => {
