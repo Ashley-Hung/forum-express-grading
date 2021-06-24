@@ -31,7 +31,9 @@
     </div>
     {{#if ../user.isAdmin}}
       <form action="/comments/{{this.id}}?_method=DELETE" method="POST" class="ml-2" onsubmit="return deleteAlert()">
-        <button type="submit" class="btn btn-danger">Delete</button>
+        <button type="submit" class="text-muted" style="border: none; background:none;">
+          <i class="far fa-trash-alt"></i>
+        </button>
       </form>
     {{/if}}
     

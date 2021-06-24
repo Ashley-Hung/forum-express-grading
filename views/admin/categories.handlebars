@@ -10,9 +10,13 @@
 <div class="d-flex align-items-center p-3 my-3 text-white-50 bg-purple rounded shadow-sm">
   {{#if category}}
     <form action="/admin/categories/{{category.id}}?_method=PUT" method="POST" class="d-flex">
-      <input type="text" class="form-control mr-2" placeholder="name" name="name" value="{{category.name}}">
-      <button type="submit" class="btn btn-primary mr-2">Update</button>
-      <a href="/admin/categories" class="btn">or Create New ?</a>
+      <div>
+        <input type="text" class="form-control mr-2" placeholder="name" name="name" value="{{category.name}}">
+      </div>
+      <div>
+        <button type="submit" class="btn btn-primary mr-2">Update</button>
+        <a href="/admin/categories">or Create New ?</a>
+      </div>
     </form>
   {{else}}
     <form action="/admin/categories" method="POST" class="d-flex">
@@ -34,17 +38,31 @@
   <tbody>
     {{#each categories}}
       <tr>
-        <th scope="row">{{this.id}}</th>
-        <td>{{this.name}}</td>
+        <th class="align-middle" scope="row">{{this.id}}</th>
+        <td class="align-middle">{{this.name}}</td>
         <td>
-          <button type="button" class="btn btn-link">
+          <div class="col-1 button-container d-flex flex-column align-items-center mx-auto">
+            <a class="icon text-muted ml-1" id="edit" href="/admin/categories/{{this.id}}">
+              <i class="fas fa-edit"></i>
+            </a>
+            <form action="/admin/categories/{{this.id}}?_method=DELETE" method="POST" style="display: inline;"
+              onsubmit="return deleteAlert()">
+              <button type="submit" class="text-muted" style="border: none; background:none;">
+                <i class="far fa-trash-alt"></i>
+              </button>
+            </form>
+          </div>
+
+          {{!-- <button type="button" class="btn btn-link">
             <a href="/admin/categories/{{this.id}}">
               Edit
             </a>
           </button>
           <form action="/admin/categories/{{this.id}}?_method=DELETE" method="POST" style="display: inline;" onsubmit="return deleteAlert()">
-            <button type="submit" class="btn btn-link">Delete</button>
-          </form>
+            <button type="submit" class="text-muted" style="border: none; background:none;">
+              <i class="far fa-trash-alt"></i>
+            </button>
+          </form> --}}
         </td>
       </tr>
     {{/each}}
