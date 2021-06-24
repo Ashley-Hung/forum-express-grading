@@ -80,11 +80,22 @@ const restController = {
           include: [User, Restaurant]
         })
       ])
-
+      console.log(comments)
       res.render('feeds', { restaurants, comments })
     } catch (error) {
       next(error)
     }
+  },
+
+  getDashboard: async (req, res, next) => {
+    try {
+      const restaurant = await Restaurant.findByPk(req.params.id, {
+        include: [Category, Comment]
+      })
+
+      console.log(restaurant.toJSON())
+      res.render('dashboard', { restaurant: restaurant.toJSON() })
+    } catch (error) {}
   }
 }
 
