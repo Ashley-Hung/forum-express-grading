@@ -78,9 +78,8 @@ const userController = {
           restaurantInfo.set(id, { RestaurantId: id, name: r.Restaurant.name, image: r.Restaurant.image, count: 1 })
         }
       })
-      const restaurants = [...restaurantInfo.values()]
 
-      res.render('profile', { user: user.toJSON(), isOwner, restaurants })
+      res.render('profile', { user: user.toJSON(), isOwner, restaurants: [...restaurantInfo.values()] })
     } catch (error) {
       next(error)
     }
