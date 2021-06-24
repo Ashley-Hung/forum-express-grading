@@ -56,6 +56,9 @@ const restController = {
       })
       if (!restaurant) throw new Error('restaurant not found.')
 
+      restaurant.increment('viewCount', { by: 1 })
+      console.log(restaurant)
+
       res.render('restaurant', { restaurant: restaurant.toJSON() })
     } catch (error) {
       next(error)
@@ -80,7 +83,7 @@ const restController = {
           include: [User, Restaurant]
         })
       ])
-      console.log(comments)
+
       res.render('feeds', { restaurants, comments })
     } catch (error) {
       next(error)
@@ -92,6 +95,7 @@ const restController = {
       const restaurant = await Restaurant.findByPk(req.params.id, {
         include: [Category, Comment]
       })
+      if (!restaurant) throw new Error('restaurant not found.')
 
       console.log(restaurant.toJSON())
       res.render('dashboard', { restaurant: restaurant.toJSON() })
