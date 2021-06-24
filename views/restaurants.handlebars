@@ -19,24 +19,29 @@
   {{/each}}
 </ul>
 
-<div class="row">
+<div class="row position-relative">
   {{#each restaurants}}
     <div class="col-md-4 py-4">
       <div class="card shadow-sm h-100">
         <a href="/restaurants/{{this.id}}" class="text-decoration-none">
           <img class="card-img-top" src="{{this.image}}" alt="Card image cap" width="286px" height="180px">
-          <div class="card-body">
-            <p class="card-text">{{this.name}}</p>
-            <span class="badge badge-secondary">{{this.categoryName}}</span>
+          <div class="card-body text-center">
+            <h5 class="card-title">{{this.name}}</h5>
+            <span class="badge badge-secondary mb-1">{{this.categoryName}}</span>
             <p class="card-text text-dark">{{this.description}}</p>
-            <form action="/favorite/{{this.id}}?_method=DELETE" method="POST">
-              <button type="submit" class="btn btn-danger">移除最愛</button>
-            </form>
-            <form action="/favorite/{{this.id}}" method="POST">
-              <button type="submit" class="btn btn-primary">加到最愛</button>
-            </form>
           </div>
         </a>
+        <div class="p-0 position-absolute" style="right: 0%;">
+          {{#if this.isFavorited }}
+            <form action="/favorite/{{this.id}}?_method=DELETE" method="POST">
+              <button type="submit" class="btn btn-danger"><i class="fas fa-heart"></i></button>
+            </form>
+          {{else}}
+            <form action="/favorite/{{this.id}}" method="POST">
+              <button type="submit" class="btn btn-danger"><i class="far fa-heart"></i></button>
+            </form>
+          {{/if}}
+        </div>
       </div>
     </div>
   {{/each}}

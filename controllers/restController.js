@@ -31,7 +31,8 @@ const restController = {
       const data = result.rows.map(r => ({
         ...r,
         description: r.description.substring(0, 50),
-        categoryName: r.Category.name
+        categoryName: r.Category.name,
+        isFavorited: req.user.FavoritedRestaurants.map(d => d.id).includes(r.id)
       }))
 
       return res.render('restaurants', {
@@ -52,13 +53,15 @@ const restController = {
   getRestaurant: async (req, res, next) => {
     try {
       const restaurant = await Restaurant.findByPk(req.params.id, {
-        include: [Category, { model: Comment, include: User }]
+        include: [Category, { model: Comment, include: User }, { model: User, as: 'FavoritedUsers' }]
       })
       if (!restaurant) throw new Error('restaurant not found.')
 
+      console.log(restaurant.toJSON())
+      const isFavorited = restaurant.FavoritedUsers.map(d => d.id).includes(req.user.id)
       restaurant.increment('viewCounts', { by: 1 })
 
-      res.render('restaurant', { restaurant: restaurant.toJSON() })
+      res.render('restaurant', { restaurant: restaurant.toJSON(), isFavorited })
     } catch (error) {
       next(error)
     }
