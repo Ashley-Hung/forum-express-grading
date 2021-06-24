@@ -1,8 +1,7 @@
 const bcrypt = require('bcryptjs')
-const { User, Comment, Restaurant } = require('../models')
+const { User, Comment, Restaurant, Favorite } = require('../models')
 const helpers = require('../_helpers')
 const imgur = require('imgur-node-api')
-const comment = require('../models/comment')
 imgur.setClientID(process.env.IMGUR_CLIENT_ID)
 
 const userController = {
@@ -146,6 +145,25 @@ const userController = {
           return res.redirect(`/users/${req.user.id}`)
         })
         .catch(error => next(error))
+    }
+  },
+
+  addFavorite: async (req, res, next) => {
+    try {
+      await Favorite.create({ UserId: req.user.id, RestaurantId: req.params.restaurantId })
+      res.redirect('back')
+    } catch (error) {
+      next(error)
+    }
+  },
+
+  removeFavorite: async (req, res, next) => {
+    try {
+      const favorite = await Favorite.findOne({ where: { UserId: req.user.id, RestaurantId: req.params.restaurantId } })
+      await favorite.destroy()
+      res.redirect('back')
+    } catch (error) {
+      next(error)
     }
   }
 }
