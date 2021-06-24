@@ -99,7 +99,9 @@ const restController = {
 
       console.log(restaurant.toJSON())
       res.render('dashboard', { restaurant: restaurant.toJSON() })
-    } catch (error) {}
+    } catch (error) {
+      next(error)
+    }
   }
 }
 
