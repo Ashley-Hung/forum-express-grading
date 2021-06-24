@@ -56,8 +56,7 @@ const restController = {
       })
       if (!restaurant) throw new Error('restaurant not found.')
 
-      restaurant.increment('viewCount', { by: 1 })
-      console.log(restaurant)
+      restaurant.increment('viewCounts', { by: 1 })
 
       res.render('restaurant', { restaurant: restaurant.toJSON() })
     } catch (error) {
