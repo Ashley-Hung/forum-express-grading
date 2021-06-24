@@ -21,7 +21,7 @@
 
 <div class="row position-relative">
   {{#each restaurants}}
-    <div class="col-md-4 py-4">
+    <div class="col-md-4 py-4 mb-4">
       <div class="card shadow-sm h-100">
         <a href="/restaurants/{{this.id}}" class="text-decoration-none">
           <img class="card-img-top" src="{{this.image}}" alt="Card image cap" width="286px" height="180px">
@@ -31,7 +31,7 @@
             <p class="card-text text-dark">{{this.description}}</p>
           </div>
         </a>
-        <div class="p-0 position-absolute" style="right: 0%;">
+        <div class="position-absolute" style="right: 0%;">
           {{#if this.isFavorited }}
             <form action="/favorite/{{this.id}}?_method=DELETE" method="POST">
               <button type="submit" class="btn btn-danger"><i class="fas fa-heart"></i></button>
@@ -43,6 +43,18 @@
           {{/if}}
         </div>
       </div>
+
+        <div>
+        {{#if this.isLiked }}
+          <form action="/like/{{this.id}}?_method=DELETE" method="POST">
+            <button type="submit" class="btn btn-danger w-100 like" style="background: #c35362;"><i class="fas fa-thumbs-up mr-2"></i>Unlike</button>
+          </form>
+        {{else}}
+          <form action="/like/{{this.id}}" method="POST">
+            <button type="submit" class="btn btn-primary w-100 like" style="background: #6253c3;"><i class="far fa-thumbs-up mr-2"></i>Like</button>
+          </form>
+        {{/if}}
+        </div>
     </div>
   {{/each}}
 </div>

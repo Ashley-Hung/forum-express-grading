@@ -1,4 +1,5 @@
 const { Restaurant, Category, User, Comment } = require('../models')
+const helpers = require('../_helpers')
 const pageLimit = 10
 
 const restController = {
@@ -32,7 +33,11 @@ const restController = {
         ...r,
         description: r.description.substring(0, 50),
         categoryName: r.Category.name,
-        isFavorited: req.user.FavoritedRestaurants.map(d => d.id).includes(r.id)
+        isFavorited: req.user.FavoritedRestaurants.map(d => d.id).includes(r.id),
+        isLiked: helpers
+          .getUser(req)
+          .LikedRestaurants.map(d => d.id)
+          .includes(r.id)
       }))
 
       return res.render('restaurants', {
@@ -53,15 +58,20 @@ const restController = {
   getRestaurant: async (req, res, next) => {
     try {
       const restaurant = await Restaurant.findByPk(req.params.id, {
-        include: [Category, { model: Comment, include: User }, { model: User, as: 'FavoritedUsers' }]
+        include: [
+          Category,
+          { model: Comment, include: User },
+          { model: User, as: 'FavoritedUsers' },
+          { model: User, as: 'LikedUsers' }
+        ]
       })
       if (!restaurant) throw new Error('restaurant not found.')
 
-      console.log(restaurant.toJSON())
-      const isFavorited = restaurant.FavoritedUsers.map(d => d.id).includes(req.user.id)
+      const isFavorited = restaurant.FavoritedUsers.map(d => d.id).includes(helpers.getUser(req).id)
+      const isLiked = restaurant.LikedUsers.map(d => d.id).includes(helpers.getUser(req).id)
       restaurant.increment('viewCounts', { by: 1 })
 
-      res.render('restaurant', { restaurant: restaurant.toJSON(), isFavorited })
+      res.render('restaurant', { restaurant: restaurant.toJSON(), isFavorited, isLiked })
     } catch (error) {
       next(error)
     }
@@ -99,7 +109,6 @@ const restController = {
       })
       if (!restaurant) throw new Error('restaurant not found.')
 
-      console.log(restaurant.toJSON())
       res.render('dashboard', { restaurant: restaurant.toJSON() })
     } catch (error) {
       next(error)

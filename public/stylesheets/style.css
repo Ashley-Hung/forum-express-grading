@@ -4,3 +4,7 @@
 .fa-edit:hover {
   color: #3e79dd;
 }
+
+.like:hover {
+  filter: brightness(90%);
+}
