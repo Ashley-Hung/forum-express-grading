@@ -105,9 +105,11 @@ const restController = {
   getDashboard: async (req, res, next) => {
     try {
       const restaurant = await Restaurant.findByPk(req.params.id, {
-        include: [Category, Comment]
+        include: [Category, Comment, { model: User, as: 'FavoritedUsers' }]
       })
       if (!restaurant) throw new Error('restaurant not found.')
+
+      console.log(restaurant.toJSON().FavoritedUsers)
 
       res.render('dashboard', { restaurant: restaurant.toJSON() })
     } catch (error) {
