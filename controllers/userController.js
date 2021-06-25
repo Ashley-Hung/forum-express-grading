@@ -1,8 +1,7 @@
 const bcrypt = require('bcryptjs')
-const { User, Comment, Restaurant, Favorite, Like } = require('../models')
+const { User, Comment, Restaurant, Favorite, Like, Followship } = require('../models')
 const helpers = require('../_helpers')
 const imgur = require('imgur-node-api')
-const user = require('../models/user')
 imgur.setClientID(process.env.IMGUR_CLIENT_ID)
 
 const userController = {
@@ -195,18 +194,50 @@ const userController = {
 
   getTopUser: async (req, res, next) => {
     try {
-      let users = await User.findAll({ raw: true, nest: true, include: [{ model: User, as: 'Followers' }] })
+      let users = await User.findAll({ include: [{ model: User, as: 'Followers' }] })
 
-      console.log(users)
       users = users
         .map(user => ({
-          ...user,
+          ...user.dataValues,
           FollowerCount: user.Followers.length,
           isFollowed: req.user.Followings.map(d => d.id).includes(user.id)
         }))
         .sort((a, b) => b.FollowerCount - a.FollowerCount)
+      console.log(users)
 
-      res.render('topUser', { users })
+      res.render('topUser', { users, isOwnerId: req.user.id })
+    } catch (error) {
+      next(error)
+    }
+  },
+
+  addFollowing: async (req, res, next) => {
+    if (Number(req.params.userId) === req.user.id) {
+      req.flash('warning_msg', '你無法追蹤自己')
+      return res.redirect(`/users/top`)
+    }
+
+    try {
+      await Followship.create({ followerId: req.user.id, followingId: req.params.userId })
+      res.redirect('back')
+    } catch (error) {
+      next(error)
+    }
+  },
+
+  removeFollowing: async (req, res, next) => {
+    if (Number(req.params.userId) === req.user.id) {
+      req.flash('warning_msg', '你無法取消追蹤自己')
+      return res.redirect(`/users/top`)
+    }
+    try {
+      const followship = await Followship.findOne({
+        where: { followerId: req.user.id, followingId: req.params.userId }
+      })
+      if (!followship) throw new Error('followship not found.')
+
+      await followship.destroy()
+      res.redirect('back')
     } catch (error) {
       next(error)
     }
