@@ -34,11 +34,11 @@
                 <a href="/restaurants/{{ this.id }}" class="btn btn-primary mr-2">Show</a>
                 {{#if this.isFavorited }}
                   <form action="/favorite/{{ this.id }}?_method=DELETE" method="POST" style="display: contents;">
-                    <button type="submit" class="btn btn-danger"><i class="fas fa-heart mr-2"></i>移除最愛</button>
+                    <button type="submit" class="btn btn-danger"><i class="fas fa-heart mr-2"></i>移除收藏</button>
                   </form>
                 {{else}}
                   <form action="/favorite/{{ this.id }}" method="POST" style="display: contents;">
-                    <button type="submit" class="btn btn-outline-danger"><i class="far fa-heart mr-2"></i>加到最愛</button>
+                    <button type="submit" class="btn btn-outline-danger"><i class="far fa-heart mr-2"></i>加入收藏</button>
                   </form>
                 {{/if}}
               </div>
