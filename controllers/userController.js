@@ -78,7 +78,7 @@ const userController = {
         }
       })
 
-      res.render('profile', { user: user.toJSON(), isOwner, restaurants: [...restaurantInfo.values()] })
+      res.render('profile', { owner: user.toJSON(), isOwner, restaurants: [...restaurantInfo.values()] })
     } catch (error) {
       next(error)
     }
@@ -87,7 +87,7 @@ const userController = {
   editUser: async (req, res, next) => {
     if (Number(req.params.id) !== helpers.getUser(req).id) {
       req.flash('warning_msg', '你只能修改自己的 profile')
-      return res.redirect(`/users/${req.user.id}`)
+      return res.redirect(`/users/${helpers.getUser(req).id}`)
     }
 
     try {
@@ -103,7 +103,7 @@ const userController = {
   putUser: (req, res, next) => {
     if (Number(req.params.id) !== helpers.getUser(req).id) {
       req.flash('warning_msg', '你只能修改自己的 profile')
-      return res.redirect(`/users/${req.user.id}`)
+      return res.redirect(`/users/${helpers.getUser(req).id}`)
     }
 
     if (!req.body.name) {
@@ -126,7 +126,7 @@ const userController = {
           })
           .then(() => {
             req.flash('success_msg', 'Your profile was successfully updated')
-            return res.redirect(`/users/${req.user.id}`)
+            return res.redirect(`/users/${helpers.getUser(req).id}`)
           })
           .catch(error => next(error))
       })
@@ -142,7 +142,7 @@ const userController = {
         })
         .then(() => {
           req.flash('success_msg', 'Your profile was successfully updated')
-          return res.redirect(`/users/${req.user.id}`)
+          return res.redirect(`/users/${helpers.getUser(req).id}`)
         })
         .catch(error => next(error))
     }
@@ -150,7 +150,7 @@ const userController = {
 
   addFavorite: async (req, res, next) => {
     try {
-      await Favorite.create({ UserId: req.user.id, RestaurantId: req.params.restaurantId })
+      await Favorite.create({ UserId: helpers.getUser(req).id, RestaurantId: req.params.restaurantId })
       res.redirect('back')
     } catch (error) {
       next(error)
@@ -159,7 +159,9 @@ const userController = {
 
   removeFavorite: async (req, res, next) => {
     try {
-      const favorite = await Favorite.findOne({ where: { UserId: req.user.id, RestaurantId: req.params.restaurantId } })
+      const favorite = await Favorite.findOne({
+        where: { UserId: helpers.getUser(req).id, RestaurantId: req.params.restaurantId }
+      })
       if (!favorite) throw new Error('favorite not found.')
 
       await favorite.destroy()
@@ -200,25 +202,28 @@ const userController = {
         .map(user => ({
           ...user.dataValues,
           FollowerCount: user.Followers.length,
-          isFollowed: req.user.Followings.map(d => d.id).includes(user.id)
+          isFollowed: helpers
+            .getUser(req)
+            .Followings.map(d => d.id)
+            .includes(user.id)
         }))
         .sort((a, b) => b.FollowerCount - a.FollowerCount)
       console.log(users)
 
-      res.render('topUser', { users, isOwnerId: req.user.id })
+      res.render('topUser', { users, isOwnerId: helpers.getUser(req).id })
     } catch (error) {
       next(error)
     }
   },
 
   addFollowing: async (req, res, next) => {
-    if (Number(req.params.userId) === req.user.id) {
+    if (Number(req.params.userId) === helpers.getUser(req).id) {
       req.flash('warning_msg', '你無法追蹤自己')
       return res.redirect(`/users/top`)
     }
 
     try {
-      await Followship.create({ followerId: req.user.id, followingId: req.params.userId })
+      await Followship.create({ followerId: helpers.getUser(req).id, followingId: req.params.userId })
       res.redirect('back')
     } catch (error) {
       next(error)
@@ -226,13 +231,13 @@ const userController = {
   },
 
   removeFollowing: async (req, res, next) => {
-    if (Number(req.params.userId) === req.user.id) {
+    if (Number(req.params.userId) === helpers.getUser(req).id) {
       req.flash('warning_msg', '你無法取消追蹤自己')
       return res.redirect(`/users/top`)
     }
     try {
       const followship = await Followship.findOne({
-        where: { followerId: req.user.id, followingId: req.params.userId }
+        where: { followerId: helpers.getUser(req).id, followingId: req.params.userId }
       })
       if (!followship) throw new Error('followship not found.')
 

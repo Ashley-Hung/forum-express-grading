@@ -33,7 +33,10 @@ const restController = {
         ...r,
         description: r.description.substring(0, 50),
         categoryName: r.Category.name,
-        isFavorited: req.user.FavoritedRestaurants.map(d => d.id).includes(r.id),
+        isFavorited: helpers
+          .getUser(req)
+          .FavoritedRestaurants.map(d => d.id)
+          .includes(r.id),
         isLiked: helpers
           .getUser(req)
           .LikedRestaurants.map(d => d.id)
@@ -110,6 +113,27 @@ const restController = {
       if (!restaurant) throw new Error('restaurant not found.')
 
       res.render('dashboard', { restaurant: restaurant.toJSON() })
+    } catch (error) {
+      next(error)
+    }
+  },
+
+  getTopRestaurants: async (req, res, next) => {
+    try {
+      let restaurants = await Restaurant.findAll({
+        include: [Category, { model: User, as: 'FavoritedUsers' }]
+      })
+
+      restaurants = restaurants
+        .map(restaurant => ({
+          ...restaurant.dataValues,
+          FavoritedUsersCount: restaurant.FavoritedUsers.length,
+          isFavorited: restaurant.FavoritedUsers.map(d => d.id).includes(helpers.getUser(req).id)
+        }))
+        .sort((a, b) => b.FavoritedUsersCount - a.FavoritedUsersCount)
+        .slice(0, 10)
+
+      res.render('topRestaurant', { restaurants })
     } catch (error) {
       next(error)
     }

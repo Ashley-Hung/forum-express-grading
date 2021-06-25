@@ -6,7 +6,7 @@ const commentController = {
       await Comment.create({
         text: req.body.text,
         RestaurantId: req.body.restaurantId,
-        UserId: req.user.id
+        UserId: helpers.getUser(req).id
       })
 
       res.redirect(`/restaurants/${req.body.restaurantId}`)
