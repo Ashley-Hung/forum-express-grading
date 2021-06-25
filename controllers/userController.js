@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs')
-const { User, Comment, Restaurant, Favorite, Like, Followship } = require('../models')
+const { User, Comment, Restaurant, Favorite, Like, Followship, Category } = require('../models')
 const helpers = require('../_helpers')
 const imgur = require('imgur-node-api')
 imgur.setClientID(process.env.IMGUR_CLIENT_ID)
@@ -64,7 +64,12 @@ const userController = {
     const isOwner = Number(req.params.id) === helpers.getUser(req).id ? true : false
     try {
       const user = await User.findByPk(req.params.id, {
-        include: [{ model: Comment, include: Restaurant }]
+        include: [
+          { model: Comment, include: Restaurant },
+          { model: User, as: 'Followers' },
+          { model: User, as: 'Followings' },
+          { model: Restaurant, include: Category, as: 'FavoritedRestaurants' }
+        ]
       })
       if (!user) throw new Error('user not found.')
 

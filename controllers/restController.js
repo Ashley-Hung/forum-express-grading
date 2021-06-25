@@ -66,7 +66,8 @@ const restController = {
           { model: Comment, include: User },
           { model: User, as: 'FavoritedUsers' },
           { model: User, as: 'LikedUsers' }
-        ]
+        ],
+        order: [[Comment, 'createdAt', 'DESC']]
       })
       if (!restaurant) throw new Error('restaurant not found.')
 

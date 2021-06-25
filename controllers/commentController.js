@@ -1,3 +1,4 @@
+const helpers = require('../_helpers')
 const { Comment } = require('../models')
 
 const commentController = {
