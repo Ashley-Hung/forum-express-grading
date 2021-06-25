@@ -1,4 +1,4 @@
-<div class="card my-3 mx-auto" style="max-width: 540px;">
+<div class="card my-3 mx-auto mb-5 " style="max-width: 540px;">
   <div class="row no-gutters">
     <div class="col-4">
       <img src="{{#if owner.image}}{{owner.image}}{{else}}https://i.imgur.com/TmLy5dw.png{{/if}}" style="width: 150px; height: 150px">
@@ -16,22 +16,102 @@
         {{/if}}
       </div>
     </div>
+    <div class="card-footer text-muted w-100">
+      <small>
+        {{!-- <div class="row text-center">
+          <span class="col-3" style="border-right: 1px solid;">{{ owner.Followers.length }} Followers</span>
+          <span class="col-3" style="border-right: 1px solid;">{{ owner.Followings.length }} Following</span>
+          <span class="col-3" style="border-right: 1px solid;">{{ restaurants.length }} 已評論餐廳</span>
+          <span class="col-3">{{ owner.FavoritedRestaurants.length }} 已收藏餐廳</span>
+        </div> --}}
+        <div class="row text-center">
+          <span class="col-3" style="border-right: 1px solid;"><strong>{{ owner.Followers.length }}</strong> followers</span>
+          <span class="col-3" style="border-right: 1px solid;"><strong>{{ owner.Followings.length }}</strong> followings</span>
+          <span class="col-3" style="border-right: 1px solid;"><strong>{{ restaurants.length }}</strong> 已評論餐廳</span>
+          <span class="col-3"><strong>{{ owner.FavoritedRestaurants.length }}</strong> 收藏的餐廳</span>
+        </div>
+      </small>
+    </div>
   </div>
 </div>
 
-<div class="row">
-  <div class="restaurant-activity col-12">
-    <div class="card mt-3" style="max-height: 25rem;">
-      <div class="card-header font-weight-bold d-flex align-items-center">
-        已評論餐廳 <span class="badge badge-pill badge-secondary font-weight-bold ml-1">{{ restaurants.length }}</span>
-      </div>
-      <div class="card-body d-flex flex-wrap justify-content-start">
-        {{#each restaurants}}
-          <a class="d-flex flex-column mx-2 mt-2" data-toggle="tooltip" data-placement="top" title="{{this.name}}" href="/restaurants/{{ this.RestaurantId }}">
-            <img src="{{ this.image }}" alt="" class="rounded-top mx-auto" style="width: 75px; height: 75px;">
-            <span class="badge badge-secondary">{{ this.count }}</span>
-          </a>
-        {{/each}}
+<div class="row justify-content-center">
+  <div class="row col-md-5">
+    <div class="restaurant-activity col-12">
+      <div class="card mt-3" style="max-height: 25rem;">
+        <div class="card-header font-weight-bold d-flex align-items-center justify-content-center">
+          Followers(追隨者) 
+          <span class="badge badge-pill badge-secondary font-weight-bold ml-1">{{ owner.Followers.length }}</span>
+        </div>
+        <div class="card-body d-flex flex-wrap justify-content-start">
+          {{#each owner.Followers}}
+            <a class="d-flex flex-column mx-2 mt-2" data-toggle="tooltip" data-placement="top" title="{{this.name}}"
+              href="/users/{{ this.id }}">
+              <img src="{{ this.image }}" alt="" class="rounded-top mx-auto" style="width: 75px; height: 75px;">
+              <span class="badge badge-secondary">{{ this.name }}</span>
+            </a>
+          {{/each}}
+        </div>
       </div>
     </div>
+  </div>
+
+  <div class="row col-md-7">
+    <div class="restaurant-activity col-12">
+      <div class="card mt-3" style="max-height: 25rem;">
+        <div class="card-header font-weight-bold d-flex align-items-center justify-content-center">
+          已評論餐廳 
+          <span class="badge badge-pill badge-secondary font-weight-bold ml-1">{{ restaurants.length }}</span>
+        </div>
+        <div class="card-body d-flex flex-wrap justify-content-start">
+          {{#each restaurants}}
+            <a class="d-flex flex-column mx-2 mt-2" data-toggle="tooltip" data-placement="top" title="{{this.name}}" href="/restaurants/{{ this.RestaurantId }}">
+              <img src="{{ this.image }}" alt="" class="rounded-top mx-auto" style="width: 75px; height: 75px;">
+              <span class="badge badge-secondary">{{ this.count }}</span>
+            </a>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row col-md-5">
+    <div class="restaurant-activity col-12">
+      <div class="card mt-3" style="max-height: 25rem;">
+        <div class="card-header font-weight-bold d-flex align-items-center justify-content-center">
+          Following(追蹤者) 
+          <span class="badge badge-pill badge-secondary font-weight-bold ml-1">{{ owner.Followings.length }}</span>
+        </div>
+        <div class="card-body d-flex flex-wrap justify-content-start">
+          {{#each owner.Followings}}
+            <a class="d-flex flex-column mx-2 mt-2" data-toggle="tooltip" data-placement="top" title="{{this.name}}"
+              href="/users/{{ this.id }}">
+              <img src="{{ this.image }}" alt="" class="rounded-top mx-auto" style="width: 75px; height: 75px;">
+              <span class="badge badge-secondary">{{ this.name }}</span>
+            </a>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row col-md-7">
+    <div class="restaurant-activity col-12">
+      <div class="card mt-3" style="max-height: 25rem;">
+        <div class="card-header font-weight-bold d-flex align-items-center justify-content-center">
+          已收藏餐廳 
+          <span class="badge badge-pill badge-secondary font-weight-bold ml-1">{{ owner.FavoritedRestaurants.length }}</span>
+        </div>
+        <div class="card-body d-flex flex-wrap justify-content-start">
+          {{#each owner.FavoritedRestaurants}}
+            <a class="d-flex flex-column mx-2 mt-2" data-toggle="tooltip" data-placement="top" title="{{this.name}}"
+              href="/restaurants/{{ this.id }}">
+              <img src="{{ this.image }}" alt="" class="rounded-top mx-auto" style="width: 75px; height: 75px;">
+              <span class="badge badge-secondary">{{ this.Category.name }}</span>
+            </a>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

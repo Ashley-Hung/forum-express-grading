@@ -20,7 +20,7 @@
   <div class="col-12 mx-auto">
     {{#each restaurants}}
       {{!-- 收藏數0，不顯示出來 --}}
-      {{#if this.FavoritedUsers.length}}
+      {{!-- {{#if this.FavoritedUsers.length}} --}}
         <div class="card mb-3 mx-auto" style="max-width: 600px;">
           <div class="row no-gutters">
             <div class="col-md-4">
@@ -45,7 +45,7 @@
             </div>
           </div>
         </div>
-      {{/if}}
+      {{!-- {{/if}} --}}
     {{/each}}
   </div>
 </div>
