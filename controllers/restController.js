@@ -109,8 +109,6 @@ const restController = {
       })
       if (!restaurant) throw new Error('restaurant not found.')
 
-      console.log(restaurant.toJSON().FavoritedUsers)
-
       res.render('dashboard', { restaurant: restaurant.toJSON() })
     } catch (error) {
       next(error)
