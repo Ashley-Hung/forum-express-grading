@@ -20,7 +20,7 @@
   <div class="col-12 mx-auto">
     {{#each restaurants}}
       {{!-- 收藏數0，不顯示出來 --}}
-      {{!-- {{#if this.FavoritedUsers.length}} --}}
+      {{#if this.FavoritedUsers.length}}
         <div class="card mb-3 mx-auto" style="max-width: 600px;">
           <div class="row no-gutters">
             <div class="col-md-4">
@@ -29,23 +29,23 @@
             <div class="col-md-8">
               <div class="card-body">
                 <h5 class="card-title">{{ this.name }}</h5>
-                <span class="badge badge-secondary">收藏數：{{ this.FavoritedUsers.length }}</span>
+                <span class="badge badge-secondary">收藏數：{{ this.FavoritedUsersCount }}</span>
                 <p class="card-text text-truncate">{{ this.description }}</p>
-                <a href="/restaurants/{{ this.id }}" class="btn btn-primary">Show</a>
+                <a href="/restaurants/{{ this.id }}" class="btn btn-primary mr-2">Show</a>
                 {{#if this.isFavorited }}
                   <form action="/favorite/{{ this.id }}?_method=DELETE" method="POST" style="display: contents;">
                     <button type="submit" class="btn btn-danger"><i class="fas fa-heart mr-2"></i>移除最愛</button>
                   </form>
                 {{else}}
                   <form action="/favorite/{{ this.id }}" method="POST" style="display: contents;">
-                    <button type="submit" class="btn btn-primary"><i class="far fa-heart mr-2"></i>加到最愛</button>
+                    <button type="submit" class="btn btn-outline-danger"><i class="far fa-heart mr-2"></i>加到最愛</button>
                   </form>
                 {{/if}}
               </div>
             </div>
           </div>
         </div>
-      {{!-- {{/if}} --}}
+      {{/if}}
     {{/each}}
   </div>
 </div>
