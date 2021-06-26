@@ -1,8 +1,8 @@
 const bcrypt = require('bcryptjs')
 const { User, Comment, Restaurant, Favorite, Like, Followship, Category } = require('../models')
 const helpers = require('../_helpers')
-const imgur = require('imgur-node-api')
-imgur.setClientID(process.env.IMGUR_CLIENT_ID)
+const { ImgurClient } = require('imgur')
+const client = new ImgurClient({ clientId: process.env.IMGUR_CLIENT_ID })
 
 const userController = {
   signUpPage: (req, res) => {
@@ -105,7 +105,7 @@ const userController = {
     }
   },
 
-  putUser: (req, res, next) => {
+  putUser: async (req, res, next) => {
     if (Number(req.params.id) !== helpers.getUser(req).id) {
       req.flash('warning_msg', '你只能修改自己的 profile')
       return res.redirect(`/users/${helpers.getUser(req).id}`)
@@ -117,39 +117,22 @@ const userController = {
     }
 
     const { file } = req
-    if (file) {
-      imgur.upload(file.path, (err, img) => {
-        if (err) throw new Error('image not found.')
-        return User.findByPk(req.params.id)
-          .then(user => {
-            if (!user) throw new Error('user not found.')
 
-            user.update({
-              name: req.body.name,
-              image: file ? img.data.link : user.image
-            })
-          })
-          .then(() => {
-            req.flash('success_msg', 'Your profile was successfully updated')
-            return res.redirect(`/users/${helpers.getUser(req).id}`)
-          })
-          .catch(error => next(error))
+    try {
+      const user = await User.findByPk(req.params.id)
+      if (!user) throw new Error('user not found.')
+
+      const imageLink = file ? (await client.upload(file.path)).data.link : user.image
+
+      user.update({
+        name: req.body.name,
+        image: imageLink
       })
-    } else {
-      return User.findByPk(req.params.id)
-        .then(user => {
-          if (!user) throw new Error('user not found.')
 
-          user.update({
-            name: req.body.name,
-            image: user.image // 維持原本的照片
-          })
-        })
-        .then(() => {
-          req.flash('success_msg', 'Your profile was successfully updated')
-          return res.redirect(`/users/${helpers.getUser(req).id}`)
-        })
-        .catch(error => next(error))
+      req.flash('success_msg', 'Your profile was successfully updated')
+      return res.redirect(`/users/${helpers.getUser(req).id}`)
+    } catch (error) {
+      next(error)
     }
   },
 

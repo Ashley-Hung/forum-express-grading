@@ -40,8 +40,8 @@
         <div class="card-body d-flex flex-wrap justify-content-start">
           {{#each owner.Followers}}
             <a class="d-flex flex-column mx-2 mt-2" data-toggle="tooltip" data-placement="top" title="{{this.name}}"
-              href="/users/{{ this.id }}">
-              <img src="{{ this.image }}" alt="" class="rounded-top mx-auto" style="width: 75px; height: 75px;">
+              href="/users/{{this.id}}">
+              <img src="{{this.image}}" onerror="this.src='https://i.imgur.com/5JjxZZi.png'" alt="" class="rounded-top mx-auto" style="width: 75px; height: 75px;">
               <span class="badge badge-secondary">{{ this.name }}</span>
             </a>
           {{/each}}
@@ -59,8 +59,8 @@
         </div>
         <div class="card-body d-flex flex-wrap justify-content-start">
           {{#each restaurants}}
-            <a class="d-flex flex-column mx-2 mt-2" data-toggle="tooltip" data-placement="top" title="{{this.name}}" href="/restaurants/{{ this.RestaurantId }}">
-              <img src="{{ this.image }}" alt="" class="rounded-top mx-auto" style="width: 75px; height: 75px;">
+            <a class="d-flex flex-column mx-2 mt-2" data-toggle="tooltip" data-placement="top" title="{{this.name}}" href="/restaurants/{{this.RestaurantId}}">
+              <img src="{{this.image}}" onerror="this.src='https://i.imgur.com/5JjxZZi.png'" alt="" class="rounded-top mx-auto" style="width: 75px; height: 75px;">
               <span class="badge badge-secondary">{{ this.count }}</span>
             </a>
           {{/each}}
@@ -74,14 +74,14 @@
       <div class="card mt-3" style="max-height: 25rem;">
         <div class="card-header font-weight-bold d-flex align-items-center justify-content-center">
           Following(追蹤者) 
-          <span class="badge badge-pill badge-secondary font-weight-bold ml-1">{{ owner.Followings.length }}</span>
+          <span class="badge badge-pill badge-secondary font-weight-bold ml-1">{{owner.Followings.length}}</span>
         </div>
         <div class="card-body d-flex flex-wrap justify-content-start">
           {{#each owner.Followings}}
             <a class="d-flex flex-column mx-2 mt-2" data-toggle="tooltip" data-placement="top" title="{{this.name}}"
-              href="/users/{{ this.id }}">
-              <img src="{{ this.image }}" alt="" class="rounded-top mx-auto" style="width: 75px; height: 75px;">
-              <span class="badge badge-secondary">{{ this.name }}</span>
+              href="/users/{{this.id}}">
+              <img src="{{this.image}}" onerror="this.src='https://i.imgur.com/5JjxZZi.png'" alt="" class="rounded-top mx-auto" style="width: 75px; height: 75px;">
+              <span class="badge badge-secondary">{{this.name}}</span>
             </a>
           {{/each}}
         </div>
@@ -94,14 +94,14 @@
       <div class="card mt-3" style="max-height: 25rem;">
         <div class="card-header font-weight-bold d-flex align-items-center justify-content-center">
           已收藏餐廳 
-          <span class="badge badge-pill badge-secondary font-weight-bold ml-1">{{ owner.FavoritedRestaurants.length }}</span>
+          <span class="badge badge-pill badge-secondary font-weight-bold ml-1">{{owner.FavoritedRestaurants.length}}</span>
         </div>
         <div class="card-body d-flex flex-wrap justify-content-start">
           {{#each owner.FavoritedRestaurants}}
             <a class="d-flex flex-column mx-2 mt-2" data-toggle="tooltip" data-placement="top" title="{{this.name}}"
               href="/restaurants/{{ this.id }}">
-              <img src="{{ this.image }}" alt="" class="rounded-top mx-auto" style="width: 75px; height: 75px;">
-              <span class="badge badge-secondary">{{ this.Category.name }}</span>
+              <img src="{{this.image}}" onerror="this.src='https://i.imgur.com/5JjxZZi.png'" alt="" class="rounded-top mx-auto" style="width: 75px; height: 75px;">
+              <span class="badge badge-secondary">{{this.Category.name}}</span>
             </a>
           {{/each}}
         </div>

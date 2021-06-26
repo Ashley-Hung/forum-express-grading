@@ -5,9 +5,9 @@ addFormats(ajv)
 require('ajv-errors')(ajv)
 const { schema } = require('../controllers/schema')
 const validate = ajv.compile(schema)
-const imgur = require('imgur-node-api')
 const { Restaurant, User, Category } = require('../models')
-imgur.setClientID(process.env.IMGUR_CLIENT_ID)
+const { ImgurClient } = require('imgur')
+const client = new ImgurClient({ clientId: process.env.IMGUR_CLIENT_ID })
 
 const adminController = {
   getRestaurants: (req, res, next) => {
@@ -26,7 +26,7 @@ const adminController = {
     })
   },
 
-  postRestaurant: (req, res, next) => {
+  postRestaurant: async (req, res, next) => {
     const { name, tel, address, opening_hours, description } = req.body
     const restaurant = req.body
     let error_msg = []
@@ -43,42 +43,24 @@ const adminController = {
     }
 
     const { file } = req
-    if (file) {
-      imgur.upload(file.path, (err, img) => {
-        return Restaurant.create({
-          name,
-          tel,
-          address,
-          opening_hours,
-          description,
-          image: file ? img.data.link : null,
-          CategoryId: restaurant.categoryId
-        })
-          .then(() => {
-            req.flash('success_msg', 'restaurant was successfully created')
-            return res.redirect('/admin/restaurants')
-          })
-          .catch(error => {
-            next(error)
-          })
-      })
-    } else {
-      return Restaurant.create({
+
+    try {
+      const imageLink = file ? (await client.upload(file.path)).data.link : null
+
+      await Restaurant.create({
         name,
         tel,
         address,
         opening_hours,
         description,
-        image: null,
+        image: imageLink,
         CategoryId: restaurant.categoryId
       })
-        .then(() => {
-          req.flash('success_msg', 'restaurant was successfully created')
-          res.redirect('/admin/restaurants')
-        })
-        .catch(error => {
-          next(error)
-        })
+
+      req.flash('success_msg', 'restaurant was successfully created')
+      return res.redirect('/admin/restaurants')
+    } catch (error) {
+      next(error)
     }
   },
 
@@ -110,7 +92,7 @@ const adminController = {
       })
   },
 
-  putRestaurant: (req, res, next) => {
+  putRestaurant: async (req, res, next) => {
     const { name, tel, address, opening_hours, description } = req.body
 
     if (!name || !tel || !address || !opening_hours) {
@@ -127,52 +109,27 @@ const adminController = {
     }
 
     const { file } = req
-    if (file) {
-      imgur.upload(file.path, (err, img) => {
-        return Restaurant.findByPk(req.params.id).then(restaurant => {
-          if (!restaurant) throw new Error('restaurant not found.')
 
-          restaurant
-            .update({
-              name,
-              tel,
-              address,
-              opening_hours,
-              description,
-              image: file ? img.data.link : restaurant.image,
-              CategoryId: req.body.categoryId
-            })
-            .then(() => {
-              req.flash('success_msg', 'restaurant was successfully to update')
-              res.redirect('/admin/restaurants')
-            })
-            .catch(error => {
-              next(error)
-            })
-        })
-      })
-    } else {
-      return Restaurant.findByPk(req.params.id).then(restaurant => {
-        if (!restaurant) throw new Error('restaurant not found.')
+    try {
+      const restaurant = await Restaurant.findByPk(req.params.id)
+      if (!restaurant) throw new Error('restaurant not found.')
 
-        restaurant
-          .update({
-            name,
-            tel,
-            address,
-            opening_hours,
-            description,
-            image: null,
-            CategoryId: req.body.categoryId
-          })
-          .then(() => {
-            req.flash('success_msg', 'restaurant was successfully to update')
-            res.redirect('/admin/restaurants')
-          })
-          .catch(error => {
-            next(error)
-          })
+      const imageLink = file ? (await client.upload(file.path)).data.link : restaurant.image
+
+      restaurant.update({
+        name,
+        tel,
+        address,
+        opening_hours,
+        description,
+        image: imageLink,
+        CategoryId: req.body.categoryId
       })
+
+      req.flash('success_msg', 'restaurant was successfully to update')
+      res.redirect('/admin/restaurants')
+    } catch (error) {
+      next(error)
     }
   },
 

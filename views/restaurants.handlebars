@@ -30,7 +30,7 @@
     <div class="col-md-4 py-4 mb-4">
       <div class="card shadow-sm h-100">
         <a href="/restaurants/{{this.id}}" class="text-decoration-none">
-          <img class="card-img-top" src="{{this.image}}" alt="Card image cap" width="286px" height="180px">
+          <img class="card-img-top" src="{{this.image}}" onerror="this.src='https://i.imgur.com/pNr8Hlb.jpeg'" alt="Card image cap" width="286px" height="180px">
           <div class="card-body text-center">
             <h5 class="card-title">{{this.name}}</h5>
             <span class="badge badge-secondary mb-1">{{this.categoryName}}</span>
