@@ -178,6 +178,15 @@ const userController = {
 
   addLike: async (req, res, next) => {
     try {
+      const isLiked = await Like.findOne({
+        where: {
+          UserId: helpers.getUser(req).id,
+          RestaurantId: req.params.restaurantId
+        }
+      })
+
+      if (isLiked) return res.redirect('/restaurants')
+
       await Like.create({ UserId: helpers.getUser(req).id, RestaurantId: req.params.restaurantId })
       res.redirect('back')
     } catch (error) {
@@ -190,7 +199,7 @@ const userController = {
       const like = await Like.findOne({
         where: { UserId: helpers.getUser(req).id, RestaurantId: req.params.restaurantId }
       })
-      if (!like) throw new Error('like not found.')
+      if (!like) return res.redirect('/restaurants')
 
       await like.destroy()
       res.redirect('back')
