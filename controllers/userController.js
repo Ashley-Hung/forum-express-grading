@@ -9,40 +9,39 @@ const userController = {
     return res.render('signup')
   },
 
-  signUp: (req, res, next) => {
+  signUp: async (req, res, next) => {
     const { name, email, password, passwordCheck } = req.body
-    const errors = []
+    const error_msg = []
     if (!name || !email || !password || !passwordCheck) {
-      errors.push({ message: '所有欄位皆為必填' })
+      error_msg.push({ message: '所有欄位皆為必填' })
     }
 
     if (password !== passwordCheck) {
-      errors.push({ message: '密碼與確認密碼不相符！' })
+      error_msg.push({ message: '密碼與確認密碼不相符！' })
     }
 
-    if (errors.length) {
-      return res.render('signup', { errors, name, email, password })
+    if (error_msg.length) {
+      return res.render('signup', { error_msg, name, email, password })
     }
 
-    User.findOne({ where: { email } }).then(user => {
+    try {
+      const user = await User.findOne({ where: { email } })
       if (user) {
-        errors.push({ message: '這個 Email 已經註冊過了。' })
-        return res.render('signup', { errors, name, email, password })
+        error_msg.push({ message: '這個 Email 已經註冊過了。' })
+        return res.render('signup', { error_msg, name, email, password })
       }
 
-      return User.create({
+      await User.create({
         name,
         email,
         password: bcrypt.hashSync(password, bcrypt.genSaltSync(10))
       })
-        .then(() => {
-          req.flash('success_msg', '成功註冊帳號！')
-          return res.redirect('/signin')
-        })
-        .catch(err => {
-          next(err)
-        })
-    })
+
+      req.flash('success_msg', '成功註冊帳號！')
+      return res.redirect('/signin')
+    } catch (error) {
+      next(error)
+    }
   },
 
   signInPage: (req, res) => {
@@ -124,7 +123,7 @@ const userController = {
 
       const imageLink = file ? (await client.upload(file.path)).data.link : user.image
 
-      user.update({
+      await user.update({
         name: req.body.name,
         image: imageLink
       })
@@ -138,6 +137,14 @@ const userController = {
 
   addFavorite: async (req, res, next) => {
     try {
+      const isFavorite = await Favorite.findOne({
+        where: {
+          UserId: helpers.getUser(req).id,
+          RestaurantId: req.params.restaurantId
+        }
+      })
+      if (isFavorite) return res.redirect('back')
+
       await Favorite.create({ UserId: helpers.getUser(req).id, RestaurantId: req.params.restaurantId })
       res.redirect('back')
     } catch (error) {
@@ -150,7 +157,7 @@ const userController = {
       const favorite = await Favorite.findOne({
         where: { UserId: helpers.getUser(req).id, RestaurantId: req.params.restaurantId }
       })
-      if (!favorite) throw new Error('favorite not found.')
+      if (!favorite) res.redirect('back')
 
       await favorite.destroy()
       res.redirect('back')
@@ -205,7 +212,6 @@ const userController = {
             .includes(user.id)
         }))
         .sort((a, b) => b.FollowerCount - a.FollowerCount)
-      console.log(users)
 
       res.render('topUser', { users, isOwnerId: helpers.getUser(req).id })
     } catch (error) {
@@ -220,6 +226,14 @@ const userController = {
     }
 
     try {
+      const isFollowing = await Followship.findOne({
+        where: {
+          followerId: helpers.getUser(req).id,
+          followingId: req.params.userId
+        }
+      })
+      if (isFollowing) return res.redirect('back')
+
       await Followship.create({ followerId: helpers.getUser(req).id, followingId: req.params.userId })
       res.redirect('back')
     } catch (error) {
@@ -236,7 +250,7 @@ const userController = {
       const followship = await Followship.findOne({
         where: { followerId: helpers.getUser(req).id, followingId: req.params.userId }
       })
-      if (!followship) throw new Error('followship not found.')
+      if (!followship) res.redirect('back')
 
       await followship.destroy()
       res.redirect('back')

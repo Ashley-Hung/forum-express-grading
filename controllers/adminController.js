@@ -10,14 +10,17 @@ const { ImgurClient } = require('imgur')
 const client = new ImgurClient({ clientId: process.env.IMGUR_CLIENT_ID })
 
 const adminController = {
-  getRestaurants: (req, res, next) => {
-    return Restaurant.findAll({ raw: true, nest: true, include: Category })
-      .then(restaurants => {
-        return res.render('admin/restaurants', { restaurants })
+  getRestaurants: async (req, res, next) => {
+    try {
+      const restaurants = await Restaurant.findAll({
+        raw: true,
+        nest: true,
+        include: Category
       })
-      .catch(error => {
-        next(error)
-      })
+      res.render('admin/restaurants', { restaurants })
+    } catch (error) {
+      next(error)
+    }
   },
 
   createRestaurant: (req, res) => {
@@ -64,32 +67,29 @@ const adminController = {
     }
   },
 
-  getRestaurant: (req, res, next) => {
-    return Restaurant.findByPk(req.params.id, { include: Category })
-      .then(restaurant => {
-        if (!restaurant) throw new Error('restaurant not found.')
-        res.render('admin/restaurant', { restaurant: restaurant.toJSON() })
-      })
-      .catch(error => {
-        next(error)
-      })
+  getRestaurant: async (req, res, next) => {
+    try {
+      const restaurant = await Restaurant.findByPk(req.params.id, { include: Category })
+      if (!restaurant) throw new Error('restaurant not found.')
+
+      res.render('admin/restaurant', { restaurant: restaurant.toJSON() })
+    } catch (error) {
+      next(error)
+    }
   },
 
-  editRestaurant: (req, res, next) => {
-    Category.findAll({ raw: true, nest: true })
-      .then(categories => {
+  editRestaurant: async (req, res, next) => {
+    try {
+      const [categories, restaurant] = await Promise.all([
+        Category.findAll({ raw: true, nest: true }),
         Restaurant.findByPk(req.params.id)
-          .then(restaurant => {
-            if (!restaurant) throw new Error('restaurant not found.')
-            return res.render('admin/create', { restaurant: restaurant.toJSON(), categories })
-          })
-          .catch(error => {
-            next(error)
-          })
-      })
-      .catch(error => {
-        next(error)
-      })
+      ])
+
+      if (!restaurant) throw new Error('restaurant not found.')
+      return res.render('admin/create', { restaurant: restaurant.toJSON(), categories })
+    } catch (error) {
+      next(error)
+    }
   },
 
   putRestaurant: async (req, res, next) => {
@@ -133,41 +133,38 @@ const adminController = {
     }
   },
 
-  deleteRestaurant: (req, res, next) => {
-    Restaurant.findByPk(req.params.id)
-      .then(restaurant => {
-        if (!restaurant) throw new Error('restaurant not found.')
-        restaurant.destroy()
-      })
-      .then(() => res.redirect('/admin/restaurants'))
-      .catch(error => {
-        next(error)
-      })
+  deleteRestaurant: async (req, res, next) => {
+    try {
+      const restaurant = await Restaurant.findByPk(req.params.id)
+      if (!restaurant) return res.redirect('/admin/restaurants')
+
+      await restaurant.destroy()
+      res.redirect('/admin/restaurants')
+    } catch (error) {
+      next(error)
+    }
   },
 
-  getUsers: (req, res, next) => {
-    User.findAll({ raw: true })
-      .then(users => {
-        res.render('admin/users', { users })
-      })
-      .catch(error => {
-        next(error)
-      })
+  getUsers: async (req, res, next) => {
+    try {
+      const users = await User.findAll({ raw: true })
+      res.render('admin/users', { users })
+    } catch (error) {
+      next(error)
+    }
   },
 
-  toggleAdmin: (req, res, next) => {
-    User.findByPk(req.params.id)
-      .then(user => {
-        if (!user) throw new Error('User not found.')
-        user.update({ isAdmin: !user.isAdmin })
-      })
-      .then(() => {
-        req.flash('success_msg', 'user was successfully to update')
-        res.redirect('/admin/users')
-      })
-      .catch(error => {
-        next(error)
-      })
+  toggleAdmin: async (req, res, next) => {
+    try {
+      const user = await User.findByPk(req.params.id)
+      if (!user) throw new Error('User not found.')
+
+      await user.update({ isAdmin: !user.isAdmin })
+      req.flash('success_msg', 'user was successfully to update')
+      res.redirect('/admin/users')
+    } catch (error) {
+      next(error)
+    }
   }
 }
 

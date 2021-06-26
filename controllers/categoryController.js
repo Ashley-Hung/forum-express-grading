@@ -19,9 +19,14 @@ const categoryController = {
   },
 
   postCategory: async (req, res, next) => {
+    if (!req.body.name) {
+      req.flash('warning_msg', "name didn't exist")
+      return res.redirect('back')
+    }
     try {
-      if (!req.body.name) {
-        req.flash('warning_msg', "name didn't exist")
+      const hasCatrgory = await Category.findOne({ where: { name: req.body.name } })
+      if (hasCatrgory) {
+        req.flash('warning_msg', 'Category already exists')
         return res.redirect('back')
       }
 
@@ -42,6 +47,12 @@ const categoryController = {
       const category = await Category.findByPk(req.params.id)
       if (!category) throw new Error('category not found.')
 
+      const hasCatrgory = await Category.findOne({ where: { name: req.body.name } })
+      if (hasCatrgory) {
+        req.flash('warning_msg', 'Category already exists')
+        return res.redirect('back')
+      }
+
       await category.update(req.body)
       res.redirect('/admin/categories')
     } catch (error) {
@@ -51,8 +62,10 @@ const categoryController = {
 
   deleteCategory: async (req, res, next) => {
     try {
-      const category = await Category.findByPk(req.params.id)
-      if (!category) throw new Error('category not found.')
+      const category = await Category.findByPk(req.params.id, {
+        where: { id: req.params.id }
+      })
+      if (!category) return res.redirect('/admin/categories')
 
       await category.destroy()
       res.redirect('/admin/categories')
