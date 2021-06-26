@@ -11,7 +11,7 @@
         </div>
         {{#if isOwner}}
           <div class="pr-2">
-            <a href="/users/{{ owner.id }}/edit" class="btn btn-primary">Edit</a>
+            <a href="/users/{{owner.id}}/edit" class="btn btn-primary">Edit</a>
           </div>
         {{/if}}
       </div>
@@ -19,10 +19,10 @@
     <div class="card-footer text-muted w-100">
       <small>
         <div class="row text-center">
-          <span class="col-3" style="border-right: 1px solid;">{{ owner.Followers.length }} Followers</span>
-          <span class="col-3" style="border-right: 1px solid;">{{ owner.Followings.length }} Following</span>
-          <span class="col-3" style="border-right: 1px solid;">{{ restaurants.length }} 已評論餐廳</span>
-          <span class="col-3">{{ owner.FavoritedRestaurants.length }} 已收藏餐廳</span>
+          <span class="col-3" style="border-right: 1px solid;">{{owner.Followers.length}} Followers</span>
+          <span class="col-3" style="border-right: 1px solid;">{{owner.Followings.length}} Following</span>
+          <span class="col-3" style="border-right: 1px solid;">{{restaurants.length}} 已評論餐廳</span>
+          <span class="col-3">{{owner.FavoritedRestaurants.length}} 已收藏餐廳</span>
         </div>
       </small>
     </div>
