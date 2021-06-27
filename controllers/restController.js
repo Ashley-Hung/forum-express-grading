@@ -1,5 +1,6 @@
-const { Restaurant, Category, User, Comment } = require('../models')
+const { Restaurant, Category, User, Comment, sequelize } = require('../models')
 const helpers = require('../_helpers')
+const { Op } = require('sequelize')
 const pageLimit = 10
 
 const restController = {
@@ -122,17 +123,26 @@ const restController = {
   getTopRestaurants: async (req, res, next) => {
     try {
       let restaurants = await Restaurant.findAll({
-        include: [Category, { model: User, as: 'FavoritedUsers' }]
+        attributes: {
+          include: [
+            [
+              sequelize.literal(`(
+              SELECT COUNT(*)
+              FROM favorites WHERE favorites.RestaurantId = Restaurant.id
+            )`),
+              'FavoritedUsersCount'
+            ]
+          ]
+        },
+        order: [[sequelize.literal('FavoritedUsersCount'), 'DESC']],
+        limit: 10,
+        include: [{ model: User, as: 'FavoritedUsers' }]
       })
 
-      restaurants = restaurants
-        .map(restaurant => ({
-          ...restaurant.dataValues,
-          FavoritedUsersCount: restaurant.FavoritedUsers.length,
-          isFavorited: restaurant.FavoritedUsers.map(d => d.id).includes(helpers.getUser(req).id)
-        }))
-        .sort((a, b) => b.FavoritedUsersCount - a.FavoritedUsersCount)
-        .slice(0, 10)
+      restaurants = restaurants.map(restaurant => ({
+        ...restaurant.dataValues,
+        isFavorited: restaurant.FavoritedUsers.map(FavoritedUser => FavoritedUser.id).includes(helpers.getUser(req).id)
+      }))
 
       res.render('topRestaurant', { restaurants })
     } catch (error) {
