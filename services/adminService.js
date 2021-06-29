@@ -21,6 +21,17 @@ const adminService = {
     } catch (error) {
       next(error)
     }
+  },
+
+  getRestaurant: async (req, res, next, callback) => {
+    try {
+      const restaurant = await Restaurant.findByPk(req.params.id, { include: Category })
+      if (!restaurant) throw new Error('restaurant not found.')
+
+      callback({ restaurant: restaurant.toJSON() })
+    } catch (error) {
+      next(error)
+    }
   }
 }
 
