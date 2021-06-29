@@ -32,6 +32,18 @@ const adminService = {
     } catch (error) {
       next(error)
     }
+  },
+
+  deleteRestaurant: async (req, res, next, callback) => {
+    try {
+      const restaurant = await Restaurant.findByPk(req.params.id)
+      if (!restaurant) return res.redirect('/admin/restaurants')
+
+      await restaurant.destroy()
+      callback({ status: 'success', message: '' })
+    } catch (error) {
+      next(error)
+    }
   }
 }
 
