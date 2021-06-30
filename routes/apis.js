@@ -8,15 +8,15 @@ const categoryController = require('../controllers/api/categoryController')
 /* admin/restaurants */
 router.get('/admin/restaurants', adminController.getRestaurants)
 router.get('/admin/restaurants/:id', adminController.getRestaurant)
-
+// create
+router.post('/admin/restaurants', upload.single('image'), adminController.postRestaurant)
+// edit
+router.put('/admin/restaurants/:id', upload.single('image'), adminController.putRestaurant)
 // delete
 router.delete('/admin/restaurants/:id', adminController.deleteRestaurant)
 
 /* admin/categories */
 router.get('/admin/categories', categoryController.getCategories)
-// create
-router.post('/admin/restaurants', upload.single('image'), adminController.postRestaurant)
-// edit
-router.put('/admin/restaurants/:id', upload.single('image'), adminController.putRestaurant)
+router.put('/admin/categories/:id', categoryController.putCategory)
 
 module.exports = router
