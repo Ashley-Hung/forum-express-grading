@@ -54,6 +54,22 @@ const categoryController = {
     } catch (error) {
       next(error)
     }
+  },
+
+  deleteCategory: async (req, res, next, callback) => {
+    try {
+      const category = await Category.findByPk(req.params.id, {
+        where: { id: req.params.id }
+      })
+      if (!category) {
+        return callback({ status: 'error', message: '' })
+      }
+
+      await category.destroy()
+      callback({ status: 'success', message: '' })
+    } catch (error) {
+      next(error)
+    }
   }
 }
 
