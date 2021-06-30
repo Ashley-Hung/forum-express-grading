@@ -54,45 +54,19 @@ const adminController = {
     }
   },
 
-  putRestaurant: async (req, res, next) => {
-    const { name, tel, address, opening_hours, description } = req.body
-
-    if (!name || !tel || !address || !opening_hours) {
-      req.flash('warning_msg', '* 為必填欄位')
-      return res.redirect('back')
-    }
-
-    validate({ name, tel, address, opening_hours: `${opening_hours}:00Z`, description })
-    if (validate.errors) {
-      for (const error of validate.errors) {
-        req.flash('error_msg', error)
+  putRestaurant: (req, res, next) => {
+    adminService.putRestaurant(req, res, next, data => {
+      if (data['status'] === 'warning') {
+        req.flash('warning_msg', data['message'])
+        return res.redirect('back')
+      } else if (data['status'] === 'error') {
+        req.flash('error_msg', data['message'])
+        return res.redirect('back')
       }
-      return res.redirect('back')
-    }
 
-    const { file } = req
-
-    try {
-      const restaurant = await Restaurant.findByPk(req.params.id)
-      if (!restaurant) throw new Error('restaurant not found.')
-
-      const imageLink = file ? (await client.upload(file.path)).data.link : restaurant.image
-
-      restaurant.update({
-        name,
-        tel,
-        address,
-        opening_hours,
-        description,
-        image: imageLink,
-        CategoryId: req.body.categoryId
-      })
-
-      req.flash('success_msg', 'restaurant was successfully to update')
+      req.flash('success_msg', data['message'])
       res.redirect('/admin/restaurants')
-    } catch (error) {
-      next(error)
-    }
+    })
   },
 
   deleteRestaurant: (req, res, next) => {

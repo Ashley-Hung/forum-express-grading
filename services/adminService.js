@@ -74,6 +74,46 @@ const adminService = {
     }
   },
 
+  putRestaurant: async (req, res, next, callback) => {
+    const { name, tel, address, opening_hours, description } = req.body
+    const errors = []
+
+    if (!name || !tel || !address || !opening_hours) {
+      return callback({ status: 'warning', message: '* 為必填欄位' })
+    }
+
+    validate({ name, tel, address, opening_hours: `${opening_hours}:00Z`, description })
+    if (validate.errors) {
+      for (const error of validate.errors) {
+        errors.push(error)
+      }
+      return callback({ status: 'error', message: errors })
+    }
+
+    const { file } = req
+
+    try {
+      const restaurant = await Restaurant.findByPk(req.params.id)
+      if (!restaurant) throw new Error('restaurant not found.')
+
+      const imageLink = file ? (await client.upload(file.path)).data.link : restaurant.image
+
+      restaurant.update({
+        name,
+        tel,
+        address,
+        opening_hours,
+        description,
+        image: imageLink,
+        CategoryId: req.body.categoryId
+      })
+
+      return callback({ status: 'success', message: 'restaurant was successfully to update' })
+    } catch (error) {
+      next(error)
+    }
+  },
+
   deleteRestaurant: async (req, res, next, callback) => {
     try {
       const restaurant = await Restaurant.findByPk(req.params.id)
