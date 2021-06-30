@@ -34,6 +34,46 @@ const adminService = {
     }
   },
 
+  postRestaurant: async (req, res, next, callback) => {
+    const { name, tel, address, opening_hours, description } = req.body
+    const restaurant = req.body
+    let error_msg = []
+    const categories = await Category.findAll({ raw: true, nest: true })
+    restaurant.categoryId = Number(req.body.categoryId)
+
+    if (!name || !tel || !address || !opening_hours) {
+      error_msg = [{ message: '* 為必填欄位' }]
+      return callback({ status: 'error', message: { restaurant, error_msg, categories } })
+      // return res.render('admin/create', { restaurant, error_msg, categories })
+    }
+
+    validate({ name, tel, address, opening_hours: `${opening_hours}:00Z`, description })
+    error_msg = validate.errors
+    if (error_msg) {
+      return callback({ status: 'error', message: { restaurant, error_msg, categories } })
+    }
+
+    const { file } = req
+
+    try {
+      const imageLink = file ? (await client.upload(file.path)).data.link : null
+
+      await Restaurant.create({
+        name,
+        tel,
+        address,
+        opening_hours,
+        description,
+        image: imageLink,
+        CategoryId: restaurant.categoryId
+      })
+
+      return callback({ status: 'success', message: 'restaurant was successfully created' })
+    } catch (error) {
+      next(error)
+    }
+  },
+
   deleteRestaurant: async (req, res, next, callback) => {
     try {
       const restaurant = await Restaurant.findByPk(req.params.id)

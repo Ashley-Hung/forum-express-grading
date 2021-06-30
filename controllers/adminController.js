@@ -23,42 +23,15 @@ const adminController = {
     })
   },
 
-  postRestaurant: async (req, res, next) => {
-    const { name, tel, address, opening_hours, description } = req.body
-    const restaurant = req.body
-    let error_msg = []
+  postRestaurant: (req, res, next) => {
+    adminService.postRestaurant(req, res, next, data => {
+      if (data['status'] === 'error') {
+        return res.render('admin/create', data['message'])
+      }
 
-    if (!name || !tel || !address || !opening_hours) {
-      error_msg = [{ message: '* 為必填欄位' }]
-      return res.render('admin/create', { restaurant, error_msg })
-    }
-
-    validate({ name, tel, address, opening_hours: `${opening_hours}:00Z`, description })
-    error_msg = validate.errors
-    if (error_msg) {
-      return res.render('admin/create', { restaurant, error_msg })
-    }
-
-    const { file } = req
-
-    try {
-      const imageLink = file ? (await client.upload(file.path)).data.link : null
-
-      await Restaurant.create({
-        name,
-        tel,
-        address,
-        opening_hours,
-        description,
-        image: imageLink,
-        CategoryId: restaurant.categoryId
-      })
-
-      req.flash('success_msg', 'restaurant was successfully created')
+      req.flash('success_msg', data['message'])
       return res.redirect('/admin/restaurants')
-    } catch (error) {
-      next(error)
-    }
+    })
   },
 
   getRestaurant: (req, res, next) => {
