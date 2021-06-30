@@ -18,6 +18,23 @@ const categoryController = {
     }
   },
 
+  postCategory: async (req, res, next, callback) => {
+    if (!req.body.name) {
+      return callback({ status: 'error', message: "name didn't exist" })
+    }
+    try {
+      const hasCatrgory = await Category.findOne({ where: { name: req.body.name } })
+      if (hasCatrgory) {
+        return callback({ status: 'error', message: 'Category already exists' })
+      }
+
+      await Category.create({ name: req.body.name })
+      return callback({ status: 'success', message: 'Category was successfully created' })
+    } catch (error) {
+      next(error)
+    }
+  },
+
   putCategory: async (req, res, next, callback) => {
     if (!req.body.name) {
       return callback({ status: 'error', message: "name didn't exist" })
@@ -30,8 +47,6 @@ const categoryController = {
       const hasCatrgory = await Category.findOne({ where: { name: req.body.name } })
       if (hasCatrgory) {
         return callback({ status: 'error', message: 'Category already exists' })
-        // req.flash('warning_msg', 'Category already exists')
-        // return res.redirect('back')
       }
 
       await category.update(req.body)

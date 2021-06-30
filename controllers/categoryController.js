@@ -8,29 +8,22 @@ const categoryController = {
     })
   },
 
-  postCategory: async (req, res, next) => {
-    if (!req.body.name) {
-      req.flash('warning_msg', "name didn't exist")
-      return res.redirect('back')
-    }
-    try {
-      const hasCatrgory = await Category.findOne({ where: { name: req.body.name } })
-      if (hasCatrgory) {
-        req.flash('warning_msg', 'Category already exists')
+  postCategory: (req, res, next) => {
+    categoryService.postCategory(req, res, next, data => {
+      if (data['status'] === 'error') {
+        req.flash('warning_msg', data['message'])
         return res.redirect('back')
       }
 
-      await Category.create({ name: req.body.name })
+      req.flash('success_msg', data['message'])
       res.redirect('/admin/categories')
-    } catch (error) {
-      next(error)
-    }
+    })
   },
 
   putCategory: (req, res, next) => {
     categoryService.putCategory(req, res, next, data => {
       if (data['status'] === 'error') {
-        req.flash('warning_msg', data['messsage'])
+        req.flash('warning_msg', data['message'])
         return res.redirect('back')
       }
 

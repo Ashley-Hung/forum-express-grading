@@ -7,6 +7,12 @@ const categoryController = {
     })
   },
 
+  postCategory: (req, res, next) => {
+    categoryService.postCategory(req, res, next, data => {
+      res.json(data)
+    })
+  },
+
   putCategory: (req, res, next) => {
     categoryService.putCategory(req, res, next, data => {
       res.json(data)
